@@ -11,11 +11,11 @@ public class PlayerModel : MonoBehaviour {
     private Rigidbody rigidbody;
 
     //Tan sucio como hermoso
-    private ActionState currentActionState;
+    public ActionState actionState { get; private set; }
     public enum ActionStates { Grounded, Airbone };
     private Dictionary<ActionStates, ActionState> actionStates;
 
-    private PowerState currentPowerState;
+    public PowerState powerState { get; private set; }
     public enum PowerStates { Basic, Furiosito, Brutal };
     private Dictionary<PowerStates, PowerState> powerStates;
 
@@ -23,6 +23,7 @@ public class PlayerModel : MonoBehaviour {
 
     void Awake() {
         rigidbody = GetComponent<Rigidbody>();
+
     }
 
     void Start() {
@@ -30,13 +31,14 @@ public class PlayerModel : MonoBehaviour {
            {ActionStates.Grounded, new GroundedActionState(this)},
            {ActionStates.Airbone, new AirborneActionState(this)}
         };
-        powerStates = new Dictionary<PowerStates, PowerState>()
-        {
-            //{PowerStates.Basic, ¿?},
-            //{PowerStates.Furiosito, ¿?},
-            //{PowerStates.Brutal, ¿?}
+        powerStates = new Dictionary<PowerStates, PowerState>(){
+            {PowerStates.Basic, new Ssj1PowerState(this)},
+            {PowerStates.Furiosito, new Ssj2PowerState(this)},
+            {PowerStates.Brutal, new Ssj2PowerState(this)}
         };
         SetActionState(ActionStates.Grounded);
+        SetPowerState(PowerStates.Basic);
+
 
     }
 
@@ -46,47 +48,34 @@ public class PlayerModel : MonoBehaviour {
     }
 
     public void SetActionState(ActionStates state) {
-        if (currentActionState != null) {
-            currentActionState.OnStateExit(currentActionState);
-        }
-
-        ActionState exitingState = currentActionState;
-        currentActionState = actionStates[state];
-
-        if (currentActionState != null) {
-            currentActionState.OnStateEnter(exitingState);
-        }
+        ActionState exitingState = actionState;
+        actionState = actionStates[state];
+        exitingState?.OnStateExit(actionState);
+        actionState?.OnStateEnter(exitingState);
     }
 
 
-    public void SetPowerState(PowerState state) {
-        if (currentPowerState != null) {
-            currentPowerState.OnStateExit(state);
-        }
-
-        PowerState exitingState = currentPowerState;
-        currentPowerState = state;
-
-        if (currentPowerState != null) {
-            currentPowerState.OnStateEnter(exitingState);
-        }
+    public void SetPowerState(PowerStates state) {
+        PowerState exitingState = powerState;
+        powerState = powerStates[state];
+        exitingState?.OnStateExit(powerState);
+        powerState?.OnStateEnter(exitingState);
     }
 
     public void SetMovementInput(Vector2 movementInput) {
-        currentActionState.SetMovementInput(movementInput);
+        actionState.SetMovementInput(movementInput);
     }
 
     public void OnJumpHighButton() {
-        currentActionState.OnJumpHighButton();
+        actionState.OnJumpHighButton();
     }
 
     public void OnJumpLongButton() {
-        currentActionState.OnJumpLongButton();
+        actionState.OnJumpLongButton();
     }
 
     public void OnReleaseEnergyButton() {
         energy -= 1000;
     }
-
 
 }

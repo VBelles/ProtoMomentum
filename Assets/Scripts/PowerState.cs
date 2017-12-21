@@ -4,14 +4,13 @@ using UnityEngine;
 
 public abstract class PowerState {
     //Ground Movement
-    protected float groundSpeed = 5f;
-    protected float airSpeed = 1f;
-    protected float jumpSpeed = 5f;
+    public virtual float groundSpeed {get; protected set;}
+    public virtual float airSpeed {get; protected set;}
+    public virtual float jumpSpeed  {get; protected set;}
 
     protected PowerState lastState;
     protected PowerState nextState;
     protected PlayerModel player;
-
 
     public PowerState(PlayerModel player) {
         this.player = player;
@@ -22,10 +21,5 @@ public abstract class PowerState {
     public virtual void OnStateEnter(PowerState lastState) { this.lastState = lastState; }
 
     public virtual void OnStateExit(PowerState nextState) { this.nextState = nextState; }
-
-    public virtual float GetGroundSpeed() { return groundSpeed; }
-    public virtual float GetAirSpeed() { return airSpeed; }
-    public virtual float GetJumpSpeed() { return jumpSpeed; }
-
 
 }
