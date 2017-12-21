@@ -8,7 +8,7 @@ public class GroundSensor : MonoBehaviour {
     private int groundColliders = 0;
 
     void Awake() {
-        player = GetComponent<PlayerModel>();
+        player = GetComponentInParent<PlayerModel>();
     }
 
     void Start() {
