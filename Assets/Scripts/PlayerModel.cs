@@ -5,138 +5,88 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody))]
 public class PlayerModel : MonoBehaviour {
 
-    //Hide in inspector (o no, da un poco igual)
-    public bool _jumpButtonPressed = false;
-    public bool _isLongJump = false;
+    public bool jumpButtonPressed = false;
+    public bool isLongJump = false;
 
-    public int _facingDirection = 1;
-    public Vector2 _snapArea = new Vector2(2.5f, 2.5f);
+    private Rigidbody rigidbody;
 
-    public ActionState _currentActionState;
-    public ActionState _airborneActionState;
-    public ActionState _groundedActionState;
+    //Tan sucio como hermoso
+    private ActionState currentActionState;
+    public enum ActionStates { Grounded, Airbone };
+    private Dictionary<ActionStates, ActionState> actionStates;
 
-    public PowerState _currentPowerState;
-    public PowerState _ssj1PowerState;
-    public PowerState _ssj2PowerState;
-    public PowerState _ssj3PowerState;
+    private PowerState currentPowerState;
+    public enum PowerStates { Basic, Furiosito, Brutal };
+    private Dictionary<PowerStates, PowerState> powerStates;
 
-    [Range(0, 3), HideInInspector]
-    public int _changeToPowerState = 0;
+    private int energy = 0;
 
-    private Rigidbody _rigidbody;
-    private PowerGauge _powerGauge;
-
-    void OnDrawGizmos()
-    {
-        Gizmos.color = Color.white;
-        Gizmos.DrawWireCube(transform.position, new Vector3(_snapArea.x, _snapArea.y, 0));
+    void Awake() {
+        rigidbody = GetComponent<Rigidbody>();
     }
 
-    void Awake()
-    {
-        _rigidbody = GetComponent<Rigidbody>();
-        _powerGauge = FindObjectOfType<PowerGauge>();
-        if (!_powerGauge) { Debug.Log("No power gauge found"); }
+    void Start() {
+        actionStates = new Dictionary<ActionStates, ActionState>(){
+           {ActionStates.Grounded, new GroundedActionState(this)},
+           {ActionStates.Airbone, new AirborneActionState(this)}
+        };
+        powerStates = new Dictionary<PowerStates, PowerState>()
+        {
+            //{PowerStates.Basic, ¿?},
+            //{PowerStates.Furiosito, ¿?},
+            //{PowerStates.Brutal, ¿?}
+        };
+        SetActionState(ActionStates.Grounded);
 
-        _groundedActionState = new GroundedActionState(this);
-        _airborneActionState = new AirborneActionState(this);
-
-        _ssj1PowerState = new Ssj1PowerState(this);
-        _ssj2PowerState = new Ssj2PowerState(this);
-        _ssj3PowerState = new Ssj3PowerState(this);
-        SetPowerState(_ssj1PowerState);
     }
 
-    void Start ()
-    {
-        SetActionState(_airborneActionState); 
-    }
-	
-	void Update ()
-    {
-        if (_rigidbody.velocity.x != 0)
-        {
-            _facingDirection = (int)(_rigidbody.velocity.x / Mathf.Abs(_rigidbody.velocity.x));
-        }
-        _currentActionState.Tick();
-        _currentPowerState.Tick();
+    void Update() {
 
-        if (_changeToPowerState != 0)
-        {
-            switch (_changeToPowerState)
-            {
-                case 1:
-                    SetPowerState(_ssj1PowerState);
-                    break;
-                case 2:
-                    SetPowerState(_ssj2PowerState);
-                    break;
-                case 3:
-                    SetPowerState(_ssj3PowerState);
-                    break;
-            }
-            _currentActionState.RefreshPowerState();
-        }
 
-	}
-
-    public void SetActionState(ActionState state)
-    {
-        if (_currentActionState != null)
-        {
-            _currentActionState.OnStateExit(state);
-        }
-        ActionState exitingState = _currentActionState;
-        _currentActionState = state;
-        gameObject.name = "Jugador - " + state.GetType().Name;
-
-        if (_currentActionState != null)
-        {
-            _currentActionState.OnStateEnter(exitingState);
-        }
     }
 
-    public void SetPowerState(PowerState state)
-    {      
-        if (_currentPowerState != null)
-        {
-            _currentPowerState.OnStateExit(state);
+    public void SetActionState(ActionStates state) {
+        if (currentActionState != null) {
+            currentActionState.OnStateExit(currentActionState);
         }
 
-        PowerState exitingState = _currentPowerState;
-        _currentPowerState = state;
+        ActionState exitingState = currentActionState;
+        currentActionState = actionStates[state];
 
-        if (_currentPowerState != null)
-        {
-            _currentPowerState.OnStateEnter(exitingState);
+        if (currentActionState != null) {
+            currentActionState.OnStateEnter(exitingState);
         }
     }
 
 
+    public void SetPowerState(PowerState state) {
+        if (currentPowerState != null) {
+            currentPowerState.OnStateExit(state);
+        }
 
-    public void DirectionBindings(float x, float y)
-    {
-        _currentActionState.MovementInput(x, y);
+        PowerState exitingState = currentPowerState;
+        currentPowerState = state;
+
+        if (currentPowerState != null) {
+            currentPowerState.OnStateEnter(exitingState);
+        }
     }
 
-    public void OnJumpHighButton()
-    {
-        _currentActionState.OnJumpHighButton();
+    public void SetMovementInput(Vector2 movementInput) {
+        currentActionState.SetMovementInput(movementInput);
     }
 
-    public void OnJumpLongButton()
-    {
-        _currentActionState.OnJumpLongButton();
+    public void OnJumpHighButton() {
+        currentActionState.OnJumpHighButton();
     }
 
-    public void OnReleaseEnergyButton()
-    {
-        _powerGauge.ReleaseEnergy(10000);
+    public void OnJumpLongButton() {
+        currentActionState.OnJumpLongButton();
     }
 
-    void OnCollisionEnter3D(Collision collision){
-    
+    public void OnReleaseEnergyButton() {
+        energy -= 1000;
     }
-  
+
+
 }
