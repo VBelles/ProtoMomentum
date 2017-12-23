@@ -5,6 +5,9 @@ using UnityEngine;
 public abstract class PowerState {
     //Ground Movement
     public virtual float groundSpeed {get; protected set;}
+    public virtual float groundAcceleration {get; protected set;}
+    public virtual float maxGroundSpeed {get; protected set;}
+    
     public virtual float airSpeed {get; protected set;}
     public virtual float jumpSpeed  {get; protected set;}
 

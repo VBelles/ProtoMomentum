@@ -5,6 +5,7 @@ using UnityEngine;
 public class GroundedActionState : ActionState {
 
     private PowerState powerState;
+    private Vector3 movement = new Vector3();
 
     public GroundedActionState(PlayerModel player) : base(player) {
     }
@@ -28,9 +29,16 @@ public class GroundedActionState : ActionState {
 
     public override void SetMovementInput(Vector2 movementInput) {
         base.SetMovementInput(movementInput);
-        rigidbody.velocity = new Vector3(movementInput.x * powerState.groundSpeed, rigidbody.velocity.y, movementInput.y * powerState.groundSpeed);
-
-
+        //rigidbody.velocity = new Vector3(movementInput.x * powerState.groundSpeed, rigidbody.velocity.y, movementInput.y * powerState.groundSpeed);
+        movement.Set(movementInput.x, 0, movementInput.y);
+        movement = Camera.main.transform.TransformDirection(movement);
+        movement.y = 0f;
+        movementInput.Normalize();
+        rigidbody.AddForce(movement * powerState.groundAcceleration);
+        
+        if(Mathf.Abs(rigidbody.velocity.magnitude) > powerState.maxGroundSpeed){
+            rigidbody.velocity = Vector3.ClampMagnitude(rigidbody.velocity, powerState.maxGroundSpeed);
+        }
     }
 
     public override void OnJumpHighButton() {

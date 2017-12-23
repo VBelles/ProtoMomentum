@@ -12,7 +12,7 @@ public class PlayerModel : MonoBehaviour {
 
     //Tan sucio como hermoso
     public ActionState actionState { get; private set; }
-    public enum ActionStates { Grounded, Airbone };
+    public enum ActionStates { Grounded, Airborne };
     private Dictionary<ActionStates, ActionState> actionStates;
 
     public PowerState powerState { get; private set; }
@@ -29,7 +29,7 @@ public class PlayerModel : MonoBehaviour {
     void Start() {
         actionStates = new Dictionary<ActionStates, ActionState>(){
            {ActionStates.Grounded, new GroundedActionState(this)},
-           {ActionStates.Airbone, new AirborneActionState(this)}
+           {ActionStates.Airborne, new AirborneActionState(this)}
         };
         powerStates = new Dictionary<PowerStates, PowerState>(){
             {PowerStates.Basic, new Ssj1PowerState(this)},

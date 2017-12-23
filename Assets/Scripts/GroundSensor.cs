@@ -27,7 +27,7 @@ public class GroundSensor : MonoBehaviour {
                 player.SetActionState(PlayerModel.ActionStates.Grounded);
             }
             groundColliders++;
-            //Debug.Log("Number of grounds colliding: " + _groundColliders);
+            //Debug.Log("Number of grounds colliding: " + groundColliders);
         }
 
     }
@@ -37,10 +37,10 @@ public class GroundSensor : MonoBehaviour {
             //Debug.Log("Leaving one ground");
             groundColliders--;
             if (groundColliders == 0) {
-                player.SetActionState(PlayerModel.ActionStates.Airbone);
+                player.SetActionState(PlayerModel.ActionStates.Airborne);
                 Debug.Log("Airborne");
             }
-            //Debug.Log("Number of grounds colliding: " + _groundColliders);
+            //Debug.Log("Number of grounds colliding: " + groundColliders);
         }
     }
 

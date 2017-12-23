@@ -4,8 +4,6 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour {
 
-    public float speed;
-
     private Rigidbody rb;
     private PlayerModel playerModel;
     void Start() {
