@@ -8,7 +8,7 @@ public class PlayerModel : MonoBehaviour {
     public bool jumpButtonPressed = false;
     public bool isLongJump = false;
 
-    private Rigidbody rigidbody;
+    private new Rigidbody rigidbody;
 
     //Tan sucio como hermoso
     public ActionState actionState { get; private set; }

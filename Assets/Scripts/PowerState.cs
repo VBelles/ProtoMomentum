@@ -4,12 +4,19 @@ using UnityEngine;
 
 public abstract class PowerState {
     //Ground Movement
-    public virtual float groundSpeed {get; protected set;}
     public virtual float groundAcceleration {get; protected set;}
+    public virtual float groundReleaseDeceleration {get; protected set;}
+    public virtual float groundSkiddingDeceleration {get; protected set;}
+
+    //Air movement
+    public virtual float jumpSpeed  {get; protected set;}//provisional
+    public virtual float gravityFallMultiplier {get; protected set;}
+
+    //Max values
     public virtual float maxGroundSpeed {get; protected set;}
+    public virtual float yMaxAirSpeed {get; protected set;}
     
-    public virtual float airSpeed {get; protected set;}
-    public virtual float jumpSpeed  {get; protected set;}
+    
 
     protected PowerState lastState;
     protected PowerState nextState;

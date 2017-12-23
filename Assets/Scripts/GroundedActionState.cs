@@ -6,6 +6,8 @@ public class GroundedActionState : ActionState {
 
     private PowerState powerState;
     private Vector3 movement = new Vector3();
+    private bool isRunning = false;
+    private float maxWalkingVelocity = 4f;
 
     public GroundedActionState(PlayerModel player) : base(player) {
     }
@@ -29,21 +31,40 @@ public class GroundedActionState : ActionState {
 
     public override void SetMovementInput(Vector2 movementInput) {
         base.SetMovementInput(movementInput);
-        //rigidbody.velocity = new Vector3(movementInput.x * powerState.groundSpeed, rigidbody.velocity.y, movementInput.y * powerState.groundSpeed);
+        if(movementInput.magnitude < 0.85f && rigidbody.velocity.magnitude <= maxWalkingVelocity + 1){
+            isRunning = false;
+        }else{
+            isRunning = true;
+        }
+  
+        movementInput.Normalize();
+
+        if(lastMovementInput != Vector2.zero && movementInput == Vector2.zero){
+            rigidbody.velocity *= powerState.groundReleaseDeceleration;
+        }
+
         movement.Set(movementInput.x, 0, movementInput.y);
         movement = Camera.main.transform.TransformDirection(movement);
         movement.y = 0f;
         movementInput.Normalize();
         rigidbody.AddForce(movement * powerState.groundAcceleration);
-        
-        if(Mathf.Abs(rigidbody.velocity.magnitude) > powerState.maxGroundSpeed){
-            rigidbody.velocity = Vector3.ClampMagnitude(rigidbody.velocity, powerState.maxGroundSpeed);
+
+        if(isRunning)
+        {
+            if(Mathf.Abs(rigidbody.velocity.magnitude) > powerState.maxGroundSpeed){
+                rigidbody.velocity = Vector3.ClampMagnitude(rigidbody.velocity, powerState.maxGroundSpeed);
+            }
+        }else{
+            if(Mathf.Abs(rigidbody.velocity.magnitude) > maxWalkingVelocity){
+                rigidbody.velocity = Vector3.ClampMagnitude(rigidbody.velocity, maxWalkingVelocity);   
+            }
         }
     }
 
     public override void OnJumpHighButton() {
         base.OnJumpHighButton();
         rigidbody.velocity += Vector3.up * powerState.jumpSpeed;
+        player.SetActionState(PlayerModel.ActionStates.Airborne);//Lo cambiamos aquí para que no se clampee el valor, luego aquí cambiará a jump squat, no a airborne
     }
 
     public override void OnJumpLongButton() {

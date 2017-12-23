@@ -5,6 +5,7 @@ using UnityEngine;
 public abstract class ActionState {
 
     protected Vector2 movementInput = new Vector2();
+    protected Vector2 lastMovementInput = new Vector2();
 
     protected ActionState lastState;
     protected ActionState nextState;
@@ -27,6 +28,7 @@ public abstract class ActionState {
     public virtual void RefreshPowerState() { }
 
     public virtual void SetMovementInput(Vector2 movementInput) {
+        lastMovementInput = this.movementInput;
         this.movementInput = movementInput;
     }
 

@@ -39,7 +39,7 @@ public class PlayerController : MonoBehaviour {
         float moveHorizontal = Input.GetAxis("Horizontal");
         float moveVertical = Input.GetAxis("Vertical");
         Vector2 movement = new Vector2(moveHorizontal, moveVertical);
-        movement.Normalize();
+        //movement.Normalize();//Si fem normalize aquí no podem fer que camini
         playerModel.SetMovementInput(movement);
 
     }
