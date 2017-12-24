@@ -12,7 +12,8 @@ public class MouseAimCamera : MonoBehaviour {
 
     private Camera cam;
     
-    private float distance = 8f;
+    private float maxDistance = 10f;
+    private float minDistance = 7f;
     private float maxVerticalOffset = 1.8f;
     private float minVerticalOffset = 0.2f;
     private float deltaAngle;
@@ -24,6 +25,7 @@ public class MouseAimCamera : MonoBehaviour {
     private float stickSensitivityY = 10f;
 
     private Vector3 verticalOffsetVector;
+    private Vector3 distanceVector;
 
 
     void Awake(){
@@ -34,6 +36,7 @@ public class MouseAimCamera : MonoBehaviour {
     void Start() {
         camTransform = transform;
         verticalOffsetVector = new Vector3();
+        distanceVector = new Vector3();
         deltaAngle = Y_ANGLE_MAX - Y_ANGLE_MIN;
     }
      
@@ -50,17 +53,20 @@ public class MouseAimCamera : MonoBehaviour {
      }
 
     void LateUpdate() {
-        Vector3 dir = new Vector3(0, 0, -distance);
+        CalculateDistanceVector();
         Quaternion rotation = Quaternion.Euler(currentY, currentX, 0);
-        camTransform.position = target.position + rotation * dir;
+        camTransform.position = target.position + rotation * distanceVector;
         CalculateVerticalOffsetVector();
-        Debug.Log(verticalOffsetVector);
         camTransform.LookAt(target.position + verticalOffsetVector);//vertical offset para que no esté en el centro exacto
     }
 
-    void CalculateVerticalOffsetVector()
-    {
+    void CalculateVerticalOffsetVector(){
         float currentOffset = ((deltaAngle - (currentY - Y_ANGLE_MIN))/deltaAngle) * (maxVerticalOffset - minVerticalOffset) + minVerticalOffset;
         verticalOffsetVector.Set(0, currentOffset, 0);
+    }
+
+    void CalculateDistanceVector(){
+        float currentDistance = ((currentY - Y_ANGLE_MIN)/deltaAngle) * (maxDistance - minDistance) + minDistance;
+        distanceVector.Set(0, 0, -currentDistance);
     }
 }
