@@ -9,7 +9,8 @@ public abstract class PowerState {
     public virtual float groundSkiddingDeceleration {get; protected set;}
 
     //Air movement
-    public virtual float jumpSpeed  {get; protected set;}//provisional
+    public virtual float jumpSpeed  {get; protected set;}
+    public virtual float shortHopSpeed  {get; protected set;}
     public virtual float gravityFallMultiplier {get; protected set;}
 
     //Max values

@@ -12,14 +12,14 @@ public class PlayerModel : MonoBehaviour {
 
     //Tan sucio como hermoso
     public ActionState actionState { get; private set; }
-    public enum ActionStates { Grounded, Airborne };
+    public enum ActionStates { Grounded, Airborne, Idle, Landing, Walk, Run, JumpSquat };
     private Dictionary<ActionStates, ActionState> actionStates;
 
     public PowerState powerState { get; private set; }
     public enum PowerStates { Basic, Furiosito, Brutal };
     private Dictionary<PowerStates, PowerState> powerStates;
 
-    private int energy = 0;
+    private int energy = 0;//provisional
 
     void Awake() {
         rigidbody = GetComponent<Rigidbody>();
@@ -29,27 +29,33 @@ public class PlayerModel : MonoBehaviour {
     void Start() {
         actionStates = new Dictionary<ActionStates, ActionState>(){
            {ActionStates.Grounded, new GroundedActionState(this)},
-           {ActionStates.Airborne, new AirborneActionState(this)}
+           {ActionStates.Airborne, new AirborneActionState(this)},
+           {ActionStates.Idle, new IdleActionState(this)},
+           {ActionStates.Landing, new LandingActionState(this)},
+           {ActionStates.Walk, new WalkActionState(this)},
+           {ActionStates.Run, new RunActionState(this)},
+           {ActionStates.JumpSquat, new JumpSquatActionState(this)}
         };
         powerStates = new Dictionary<PowerStates, PowerState>(){
             {PowerStates.Basic, new Ssj1PowerState(this)},
             {PowerStates.Furiosito, new Ssj2PowerState(this)},
             {PowerStates.Brutal, new Ssj2PowerState(this)}
         };
-        SetActionState(ActionStates.Grounded);
+        SetActionState(ActionStates.Idle);//TODO cambiar a Idle cuando esté preparado
         SetPowerState(PowerStates.Basic);
 
 
     }
 
     void Update() {
-
+        actionState.Tick();
 
     }
 
     public void SetActionState(ActionStates state) {
         ActionState exitingState = actionState;
         actionState = actionStates[state];
+        gameObject.name = "Jugador - " + actionState.GetType().Name;
         exitingState?.OnStateExit(actionState);
         actionState?.OnStateEnter(exitingState);
     }

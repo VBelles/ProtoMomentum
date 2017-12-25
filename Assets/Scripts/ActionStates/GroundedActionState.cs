@@ -4,10 +4,10 @@ using UnityEngine;
 
 public class GroundedActionState : ActionState {
 
-    private PowerState powerState;
-    private Vector3 movement = new Vector3();
-    private bool isRunning = false;
-    private float maxWalkingVelocity = 4f;
+    protected PowerState powerState;
+    protected Vector3 movement = new Vector3();
+    protected bool isRunning = false;
+    protected float maxWalkingVelocity = 4f;
 
     public GroundedActionState(PlayerModel player) : base(player) {
     }
@@ -39,7 +39,7 @@ public class GroundedActionState : ActionState {
   
         movementInput.Normalize();
 
-        if(lastMovementInput != Vector2.zero && movementInput == Vector2.zero){
+        if(lastMovementInput != Vector2.zero && movementInput == Vector2.zero){//Parón
             rigidbody.velocity *= powerState.groundReleaseDeceleration;
         }
 
@@ -63,8 +63,8 @@ public class GroundedActionState : ActionState {
 
     public override void OnJumpHighButton() {
         base.OnJumpHighButton();
-        rigidbody.velocity += Vector3.up * powerState.jumpSpeed;
-        player.SetActionState(PlayerModel.ActionStates.Airborne);//Lo cambiamos aquí para que no se clampee el valor, luego aquí cambiará a jump squat, no a airborne
+        //rigidbody.velocity += Vector3.up * powerState.jumpSpeed;
+        player.SetActionState(PlayerModel.ActionStates.JumpSquat);//Lo cambiamos aquí para que no se clampee el valor, luego aquí cambiará a jump squat, no a airborne
     }
 
     public override void OnJumpLongButton() {

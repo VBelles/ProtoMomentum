@@ -22,9 +22,10 @@ public class GroundSensor : MonoBehaviour {
 
     void OnTriggerEnter(Collider collider) {
         if (collider.gameObject.CompareTag("Ground")) {
-            Debug.Log("Entering new ground");
+            //Debug.Log("Entering new ground");
             if (groundColliders == 0) {
-                player.SetActionState(PlayerModel.ActionStates.Grounded);
+                //player.SetActionState(PlayerModel.ActionStates.Grounded);
+                player.SetActionState(PlayerModel.ActionStates.Landing);
             }
             groundColliders++;
             //Debug.Log("Number of grounds colliding: " + groundColliders);
@@ -38,7 +39,7 @@ public class GroundSensor : MonoBehaviour {
             groundColliders--;
             if (groundColliders == 0) {
                 player.SetActionState(PlayerModel.ActionStates.Airborne);
-                Debug.Log("Airborne");
+                //Debug.Log("Airborne");
             }
             //Debug.Log("Number of grounds colliding: " + groundColliders);
         }
