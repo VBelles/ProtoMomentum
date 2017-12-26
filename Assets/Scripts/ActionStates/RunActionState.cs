@@ -20,6 +20,8 @@ public class RunActionState : GroundedActionState {
 		base.SetMovementInput(movementInput);
 		if(rigidbody.velocity == Vector3.zero && movementInput == Vector2.zero){
 			player.SetActionState(PlayerModel.ActionStates.Idle);
+		}else if(rigidbody.velocity.magnitude <= maxWalkingVelocity && movementInput.magnitude <= walkingJoystickMaxTilt){
+			player.SetActionState(PlayerModel.ActionStates.Walk);
 		}
 	}
 

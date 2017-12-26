@@ -8,6 +8,7 @@ public class GroundedActionState : ActionState {
     protected Vector3 movement = new Vector3();
     protected bool isRunning = false;
     protected float maxWalkingVelocity = 4f;
+    protected float walkingJoystickMaxTilt = 0.85f;
 
     public GroundedActionState(PlayerModel player) : base(player) {
     }
@@ -31,7 +32,7 @@ public class GroundedActionState : ActionState {
 
     public override void SetMovementInput(Vector2 movementInput) {
         base.SetMovementInput(movementInput);
-        if(movementInput.magnitude < 0.85f && rigidbody.velocity.magnitude <= maxWalkingVelocity + 1){
+        if(movementInput.magnitude < walkingJoystickMaxTilt){//} && rigidbody.velocity.magnitude <= maxWalkingVelocity + 1){
             isRunning = false;
         }else{
             isRunning = true;
