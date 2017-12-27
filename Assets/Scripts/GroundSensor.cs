@@ -11,20 +11,17 @@ public class GroundSensor : MonoBehaviour {
         player = GetComponentInParent<PlayerModel>();
     }
 
-    void Start() {
-
-    }
-
-    // Update is called once per frame
     void Update() {
-
+        if(groundColliders < 0){
+            Debug.LogWarning("Menos de 0 ground colliders, lo mínimo debería ser 0",this);
+        }
     }
 
     void OnTriggerEnter(Collider collider) {
         if (collider.gameObject.CompareTag("Ground")) {
-            Debug.Log("Entering new ground");
+            //Debug.Log("Entering new ground");
             if (groundColliders == 0) {
-                player.SetActionState(PlayerModel.ActionStates.Grounded);
+                player.SetActionState(PlayerModel.ActionStates.Landing);
             }
             groundColliders++;
             //Debug.Log("Number of grounds colliding: " + groundColliders);
@@ -37,8 +34,9 @@ public class GroundSensor : MonoBehaviour {
             //Debug.Log("Leaving one ground");
             groundColliders--;
             if (groundColliders == 0) {
-                player.SetActionState(PlayerModel.ActionStates.Airborne);
-                Debug.Log("Airborne");
+                if(player.actionState is GroundedActionState){
+                    (player.actionState as GroundedActionState).OnLeavingGround();  
+                }
             }
             //Debug.Log("Number of grounds colliding: " + groundColliders);
         }

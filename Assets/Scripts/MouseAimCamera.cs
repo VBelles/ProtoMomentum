@@ -4,32 +4,39 @@ using UnityEngine;
 
 public class MouseAimCamera : MonoBehaviour {
 
-    private const float Y_ANGLE_MIN = 10f;
+    private const float Y_ANGLE_MIN = -5f;
+    private const float Y_ANGLE_MIN_MOVEMENT = 10f;
     private const float Y_ANGLE_MAX = 45f;
+    private const float DEFAULT_Y = 20f;
 
     private Transform target;
     private Transform camTransform;
+    private PlayerModel player;
 
     private Camera cam;
     
     private float maxDistance = 10f;
-    private float minDistance = 7f;
+    private float minDistance = 4f;
     private float maxVerticalOffset = 1.8f;
     private float minVerticalOffset = 0.2f;
     private float deltaAngle;
     private float currentX = 0f;
     private float currentY = 20f;
-    private float mouseSensitivityX = 2.5f;
-    private float mouseSensitivityY = 1f;
+    private float mouseSensitivityX = 1.5f;
+    private float mouseSensitivityY = 0.8f;
     private float stickSensitivityX = 25f;
     private float stickSensitivityY = 10f;
+    private float cameraYVelocity = 30f;//grados por segundo
 
+    private bool isPlayerControllingCamera  = false;
     private Vector3 verticalOffsetVector;
     private Vector3 distanceVector;
-
+    private Coroutine moveCameraCoroutine;
+    private bool isCoroutineRunning = false;
 
     void Awake(){
-		target = FindObjectOfType<PlayerModel>().transform;
+        player = FindObjectOfType<PlayerModel>();
+		target = player.transform;
         cam = GetComponent<Camera>();
 	}
 
@@ -42,14 +49,36 @@ public class MouseAimCamera : MonoBehaviour {
      
      void Update(){
         if(Input.GetAxis("Right Stick X") == 0 && Input.GetAxis("Right Stick Y") == 0){
+            if(Input.GetAxis("Mouse X") == 0 && Input.GetAxis("Mouse Y") == 0){
+                isPlayerControllingCamera = false; 
+            }else{
+                isPlayerControllingCamera = true;
+            }
             currentX += Input.GetAxis("Mouse X") * mouseSensitivityX;
             currentY -= Input.GetAxis("Mouse Y") * mouseSensitivityY;
         }else{
             currentX += Input.GetAxis("Right Stick X") * stickSensitivityX;
             currentY += Input.GetAxis("Right Stick Y") * stickSensitivityY;
+            isPlayerControllingCamera = true;
         }
 
-        currentY = Mathf.Clamp(currentY, Y_ANGLE_MIN, Y_ANGLE_MAX);
+        if(isPlayerControllingCamera && moveCameraCoroutine != null && isCoroutineRunning == true){
+            StopCoroutine(moveCameraCoroutine);
+            isCoroutineRunning = false;
+        }
+
+        if(player.actionState is IdleActionState){
+            currentY = Mathf.Clamp(currentY, Y_ANGLE_MIN, Y_ANGLE_MAX);
+        }else{
+            if(currentY < DEFAULT_Y){
+                if(!isPlayerControllingCamera && !isCoroutineRunning){
+                    moveCameraCoroutine = StartCoroutine(MoveTowardsAngleAtVelocity(DEFAULT_Y, cameraYVelocity));
+                }
+                currentY = Mathf.Clamp(currentY, Y_ANGLE_MIN, Y_ANGLE_MAX);
+            }else{
+                currentY = Mathf.Clamp(currentY, Y_ANGLE_MIN_MOVEMENT, Y_ANGLE_MAX);
+            }  
+        }
      }
 
     void LateUpdate() {
@@ -61,12 +90,36 @@ public class MouseAimCamera : MonoBehaviour {
     }
 
     void CalculateVerticalOffsetVector(){
-        float currentOffset = ((deltaAngle - (currentY - Y_ANGLE_MIN))/deltaAngle) * (maxVerticalOffset - minVerticalOffset) + minVerticalOffset;
+        float currentOffset;
+        
+        currentOffset = ((deltaAngle - (currentY - Y_ANGLE_MIN))/deltaAngle) * (maxVerticalOffset - minVerticalOffset) + minVerticalOffset;
+        
         verticalOffsetVector.Set(0, currentOffset, 0);
     }
 
     void CalculateDistanceVector(){
         float currentDistance = ((currentY - Y_ANGLE_MIN)/deltaAngle) * (maxDistance - minDistance) + minDistance;
         distanceVector.Set(0, 0, -currentDistance);
+    }
+
+    IEnumerator MoveTowardsAngleAtVelocity(float targetAngle, float velocity){
+        if(velocity !=0){
+            isCoroutineRunning = true;
+            if((currentY > targetAngle && velocity < 0) || currentY < targetAngle && velocity > 0){
+                if(velocity < 0){
+                    while(currentY > targetAngle){
+                        currentY += velocity * Time.deltaTime;
+                        yield return 0;
+                    }
+                }else{
+                    while(currentY < targetAngle){
+                        currentY += velocity * Time.deltaTime;
+                        yield return 0;
+                    }
+                }
+                
+            }
+        }
+        isCoroutineRunning = false;
     }
 }
