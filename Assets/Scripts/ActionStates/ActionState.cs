@@ -4,7 +4,6 @@ using UnityEngine;
 
 public abstract class ActionState {
 
-    protected Vector2 movementInput = new Vector2();
     protected Vector2 lastMovementInput = new Vector2();
 
     protected ActionState lastState;
@@ -28,8 +27,7 @@ public abstract class ActionState {
     public virtual void RefreshPowerState() { }
 
     public virtual void SetMovementInput(Vector2 movementInput) {
-        lastMovementInput = this.movementInput;
-        this.movementInput = movementInput;
+        lastMovementInput = movementInput;
     }
 
     public virtual void OnJumpHighButton() { }

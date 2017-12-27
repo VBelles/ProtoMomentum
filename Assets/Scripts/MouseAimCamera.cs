@@ -31,7 +31,8 @@ public class MouseAimCamera : MonoBehaviour {
     private bool isPlayerControllingCamera  = false;
     private Vector3 verticalOffsetVector;
     private Vector3 distanceVector;
-
+    private Coroutine moveCameraCoroutine;
+    private bool isCoroutineRunning = false;
 
     void Awake(){
         player = FindObjectOfType<PlayerModel>();
@@ -61,12 +62,17 @@ public class MouseAimCamera : MonoBehaviour {
             isPlayerControllingCamera = true;
         }
 
+        if(isPlayerControllingCamera && moveCameraCoroutine != null && isCoroutineRunning == true){
+            StopCoroutine(moveCameraCoroutine);
+            isCoroutineRunning = false;
+        }
+
         if(player.actionState is IdleActionState){
             currentY = Mathf.Clamp(currentY, Y_ANGLE_MIN, Y_ANGLE_MAX);
         }else{
             if(currentY < DEFAULT_Y){
-                if(!isPlayerControllingCamera){
-                    currentY += cameraYVelocity * Time.deltaTime;
+                if(!isPlayerControllingCamera && !isCoroutineRunning){
+                    moveCameraCoroutine = StartCoroutine(MoveTowardsAngleAtVelocity(DEFAULT_Y, cameraYVelocity));
                 }
                 currentY = Mathf.Clamp(currentY, Y_ANGLE_MIN, Y_ANGLE_MAX);
             }else{
@@ -94,5 +100,26 @@ public class MouseAimCamera : MonoBehaviour {
     void CalculateDistanceVector(){
         float currentDistance = ((currentY - Y_ANGLE_MIN)/deltaAngle) * (maxDistance - minDistance) + minDistance;
         distanceVector.Set(0, 0, -currentDistance);
+    }
+
+    IEnumerator MoveTowardsAngleAtVelocity(float targetAngle, float velocity){
+        if(velocity !=0){
+            isCoroutineRunning = true;
+            if((currentY > targetAngle && velocity < 0) || currentY < targetAngle && velocity > 0){
+                if(velocity < 0){
+                    while(currentY > targetAngle){
+                        currentY += velocity * Time.deltaTime;
+                        yield return 0;
+                    }
+                }else{
+                    while(currentY < targetAngle){
+                        currentY += velocity * Time.deltaTime;
+                        yield return 0;
+                    }
+                }
+                
+            }
+        }
+        isCoroutineRunning = false;
     }
 }

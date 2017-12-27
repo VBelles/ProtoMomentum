@@ -9,8 +9,11 @@ public class GroundedActionState : ActionState {
     protected bool isRunning = false;
     protected float maxWalkingVelocity = 4f;
     protected float walkingJoystickMaxTilt = 0.85f;
+    protected float turnAroundMinAngle = 120;
+    protected float turnAroundMaxDotProduct;
 
     public GroundedActionState(PlayerModel player) : base(player) {
+        turnAroundMaxDotProduct = Mathf.Cos((Mathf.PI/180)*turnAroundMinAngle);
     }
 
     public override void Tick() {
@@ -47,24 +50,32 @@ public class GroundedActionState : ActionState {
         movement.Set(movementInput.x, 0, movementInput.y);
         movement = Camera.main.transform.TransformDirection(movement);
         movement.y = 0f;
-        movementInput.Normalize();
-        rigidbody.AddForce(movement * powerState.groundAcceleration);
+        movement.Normalize();
 
-        if(isRunning)
-        {
-            if(Mathf.Abs(rigidbody.velocity.magnitude) > powerState.maxGroundSpeed){
-                rigidbody.velocity = Vector3.ClampMagnitude(rigidbody.velocity, powerState.maxGroundSpeed);
+        Debug.Log("last: " + lastMovementInput + " , current: " + movementInput);
+        lastMovementInput.Normalize();
+        if(Vector2.Dot(lastMovementInput, movementInput) > turnAroundMaxDotProduct){//if lastMovementInput a 120 grados -> turn around
+            rigidbody.AddForce(movement * powerState.groundAcceleration);//Lo que debería hacer es girar hasta estar en la misma dirección que movement y add force siempre para adelante
+            if(isRunning)
+            {
+                if(Mathf.Abs(rigidbody.velocity.magnitude) > powerState.maxGroundSpeed){
+                    rigidbody.velocity = Vector3.ClampMagnitude(rigidbody.velocity, powerState.maxGroundSpeed);
+                }
+            }else{
+                if(Mathf.Abs(rigidbody.velocity.magnitude) > maxWalkingVelocity){
+                    rigidbody.velocity = Vector3.ClampMagnitude(rigidbody.velocity, maxWalkingVelocity);   
+                }
             }
         }else{
-            if(Mathf.Abs(rigidbody.velocity.magnitude) > maxWalkingVelocity){
-                rigidbody.velocity = Vector3.ClampMagnitude(rigidbody.velocity, maxWalkingVelocity);   
-            }
+            Debug.Log("Turn around, velocity = " + rigidbody.velocity.magnitude);
+            player.SetActionState(PlayerModel.ActionStates.TurnAround);
         }
     }
 
     public override void OnJumpHighButton() {
         base.OnJumpHighButton();
         //rigidbody.velocity += Vector3.up * powerState.jumpSpeed;
+        Debug.Log("Jump squatting");
         player.SetActionState(PlayerModel.ActionStates.JumpSquat);//Lo cambiamos aquí para que no se clampee el valor, luego aquí cambiará a jump squat, no a airborne
     }
 
@@ -73,4 +84,9 @@ public class GroundedActionState : ActionState {
         //rigidbody.velocity = new Vector2(player.facingDirection.x * xLongJumpVelocity, _yLongJumpVelocity, player.facingDirection.y * xLongJumpVelocity);
         player.isLongJump = true;
     }
+
+    public virtual void OnLeavingGround() {
+        Debug.Log("Leaving ground from grounded");
+        player.SetActionState(PlayerModel.ActionStates.AirborneNormal);
+     }
 }

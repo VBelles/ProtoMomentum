@@ -21,7 +21,7 @@ public class LandingActionState : GroundedActionState {
         base.OnStateEnter(lastState);
 		//Guardar velocidad a la que ha llegado al suelo
 		landingVelocity = rigidbody.velocity;
-		//controlar velocidad
+		//controlar velocidad, si es que se puede...
 
 		//Coger velocidad de impacto del estado anterior
 		if(lastState is AirborneActionState)
@@ -55,7 +55,6 @@ public class LandingActionState : GroundedActionState {
 			yield return new WaitForSeconds((1/60f)*landingLagLong);
 		}
 		
-		//player.SetActionState(PlayerModel.ActionStates.Grounded);
 		if(nextMovement == Vector2.zero){
 			player.SetActionState(PlayerModel.ActionStates.Idle);
 		}else if(nextMovement.magnitude < 0.85){

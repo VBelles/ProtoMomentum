@@ -38,8 +38,6 @@ public class AirborneActionState : ActionState {
     }
 
     public override void SetMovementInput(Vector2 movementInput) {
-
-
         base.SetMovementInput(movementInput);
     }
 

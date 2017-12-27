@@ -17,6 +17,7 @@ public class IdleActionState : GroundedActionState {
     }
 
 	public override void SetMovementInput(Vector2 movementInput){
+		//lastMovementInput = movementInput;
 		if(movementInput.magnitude != 0){
 			if(movementInput.magnitude < 0.85f){
 				player.SetActionState(PlayerModel.ActionStates.Walk);
@@ -41,5 +42,10 @@ public class IdleActionState : GroundedActionState {
 
 	public override void OnJumpLongButton(){
 		base.OnJumpLongButton();
+	}
+
+	public override void OnLeavingGround() {
+	base.OnLeavingGround();
+	Debug.Log("Leaving ground from idle");
 	}
 }
