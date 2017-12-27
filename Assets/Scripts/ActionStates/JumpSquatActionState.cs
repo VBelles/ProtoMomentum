@@ -20,7 +20,6 @@ public class JumpSquatActionState : GroundedActionState {
 		enterVelocity = enterDirection.magnitude;
 		enterDirection.Normalize();
 		waitCoroutine = player.StartCoroutine(TransitionToState());
-		Debug.Log("On jump squat");
     }
 
     public override void OnStateExit(ActionState nextState) {
@@ -43,13 +42,11 @@ public class JumpSquatActionState : GroundedActionState {
 
 	IEnumerator TransitionToState(){
 		yield return new WaitForSeconds((1/60f)*jumpSquatDuration);
-		player.SetActionState(PlayerModel.ActionStates.Idle);//Si el salto no sale no se queda clavado en jump squat
 		if(player.jumpButtonPressed){
 			rigidbody.velocity += Vector3.up * powerState.jumpSpeed;
 		}else{
 			rigidbody.velocity += Vector3.up * powerState.shortHopSpeed;
 		}
-		
-		//Dejamos que ground sensor se ocupe del cambio de estado (llamará a OnLeavingGround de GroundedActionState)
+		player.SetActionState(PlayerModel.ActionStates.AirborneNormal);
 	}
 }

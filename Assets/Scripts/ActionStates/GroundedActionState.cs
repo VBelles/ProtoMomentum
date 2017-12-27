@@ -6,6 +6,8 @@ public class GroundedActionState : ActionState {
 
     protected PowerState powerState;
     protected Vector3 movement = new Vector3();
+    protected Vector2 currentVelocityNormalized = new Vector2();
+    protected Vector2 movementInputFromCameraPOV = new Vector2();
     protected bool isRunning = false;
     protected float maxWalkingVelocity = 4f;
     protected float walkingJoystickMaxTilt = 0.85f;
@@ -51,10 +53,13 @@ public class GroundedActionState : ActionState {
         movement = Camera.main.transform.TransformDirection(movement);
         movement.y = 0f;
         movement.Normalize();
+        
+        movementInputFromCameraPOV.Set(movement.x, movement.z);
+        currentVelocityNormalized.Set(rigidbody.velocity.x, rigidbody.velocity.z);
+        currentVelocityNormalized.Normalize(); 
+        //Debug.Log("last: " + currentVelocityNormalized + " , current: " + movementInputFromCameraPOV);
 
-        Debug.Log("last: " + lastMovementInput + " , current: " + movementInput);
-        lastMovementInput.Normalize();
-        if(Vector2.Dot(lastMovementInput, movementInput) > turnAroundMaxDotProduct){//if lastMovementInput a 120 grados -> turn around
+        if(Vector2.Dot(currentVelocityNormalized, movementInputFromCameraPOV) > turnAroundMaxDotProduct){//si la velocidad y el nuevo input (en referencia a la cámara) están a 120 grados o más -> turn around
             rigidbody.AddForce(movement * powerState.groundAcceleration);//Lo que debería hacer es girar hasta estar en la misma dirección que movement y add force siempre para adelante
             if(isRunning)
             {
@@ -67,7 +72,7 @@ public class GroundedActionState : ActionState {
                 }
             }
         }else{
-            Debug.Log("Turn around, velocity = " + rigidbody.velocity.magnitude);
+            //Debug.Log("Turn around, velocity = " + rigidbody.velocity.magnitude);
             player.SetActionState(PlayerModel.ActionStates.TurnAround);
         }
     }
@@ -75,7 +80,6 @@ public class GroundedActionState : ActionState {
     public override void OnJumpHighButton() {
         base.OnJumpHighButton();
         //rigidbody.velocity += Vector3.up * powerState.jumpSpeed;
-        Debug.Log("Jump squatting");
         player.SetActionState(PlayerModel.ActionStates.JumpSquat);//Lo cambiamos aquí para que no se clampee el valor, luego aquí cambiará a jump squat, no a airborne
     }
 
@@ -86,7 +90,6 @@ public class GroundedActionState : ActionState {
     }
 
     public virtual void OnLeavingGround() {
-        Debug.Log("Leaving ground from grounded");
         player.SetActionState(PlayerModel.ActionStates.AirborneNormal);
      }
 }
