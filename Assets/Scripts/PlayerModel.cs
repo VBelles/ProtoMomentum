@@ -7,6 +7,7 @@ public class PlayerModel : MonoBehaviour {
 
     public bool jumpButtonPressed = false;
     public bool isLongJump = false;
+    public Vector2 lastMovementInput = new Vector2();
 
     private new Rigidbody rigidbody;
 

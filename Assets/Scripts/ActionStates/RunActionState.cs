@@ -23,6 +23,8 @@ public class RunActionState : GroundedActionState {
 		}else if(rigidbody.velocity.magnitude <= maxWalkingVelocity && movementInput.magnitude <= walkingJoystickMaxTilt){
 			player.SetActionState(PlayerModel.ActionStates.Walk);
 		}
+		
+		player.lastMovementInput = movementInput;
 	}
 
 	public override void OnJumpHighButton(){

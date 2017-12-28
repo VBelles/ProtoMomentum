@@ -5,19 +5,25 @@ using UnityEngine;
 public class TurnAroundActionState : GroundedActionState {
 
 	private Coroutine waitCoroutine;
-	private int turnAroundLag = 3;
+	private int turnAroundLag = 6;
+
+	private Vector3 exitDirection = new Vector3();
 
 	public TurnAroundActionState(PlayerModel player) : base(player) {
     }
 
     public override void Tick() {
 		//Rotar hasta el ángulo de salida en "turnAroundLag" tiempo
-    }
+		player.transform.forward = Vector3.RotateTowards(player.transform.forward, exitDirection, Mathf.PI*60*Time.deltaTime/turnAroundLag , 0.0f);
+	}
 
     public override void OnStateEnter(ActionState lastState) {
         base.OnStateEnter(lastState);
+		if(lastState is GroundedActionState){
+			exitDirection = (lastState as GroundedActionState).movement;
+		}
 		waitCoroutine = player.StartCoroutine(TransitionToState());
-		rigidbody.velocity = Vector3.zero;
+		rigidbody.velocity *= player.powerState.groundSkiddingDeceleration;
     }
 
     public override void OnStateExit(ActionState nextState) {
@@ -29,7 +35,7 @@ public class TurnAroundActionState : GroundedActionState {
 
 	IEnumerator TransitionToState(){
 		yield return new WaitForSeconds((1/60f)*turnAroundLag);
-		rigidbody.AddForce(movement * powerState.groundAcceleration);
+		rigidbody.AddForce(exitDirection * powerState.groundAcceleration);
 		rigidbody.velocity = Vector3.ClampMagnitude(rigidbody.velocity, maxWalkingVelocity);
 		player.SetActionState(PlayerModel.ActionStates.Walk);
 	}

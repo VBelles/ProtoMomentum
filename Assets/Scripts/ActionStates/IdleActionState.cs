@@ -17,23 +17,27 @@ public class IdleActionState : GroundedActionState {
     }
 
 	public override void SetMovementInput(Vector2 movementInput){
-		//lastMovementInput = movementInput;
 		if(movementInput.magnitude != 0){
 			if(movementInput.magnitude < 0.85f){
 				player.SetActionState(PlayerModel.ActionStates.Walk);
 			}else{
 				player.SetActionState(PlayerModel.ActionStates.Run);
-			}	
+			}
 		movementInput.Normalize();
 		movement.Set(movementInput.x, 0, movementInput.y);
         movement = Camera.main.transform.TransformDirection(movement);
         movement.y = 0f;
-        movementInput.Normalize();
-        rigidbody.AddForce(movement * powerState.groundAcceleration);
+        movement.Normalize();
+
+		player.transform.forward = movement;//El personaje encara donde quiere ir (sin siquiera rotar, cuando está quieto)
+
+        rigidbody.AddForce(player.transform.forward * powerState.groundAcceleration);//Siempre se mueve de frente
 		}
 		if(Mathf.Abs(rigidbody.velocity.magnitude) > maxWalkingVelocity){
                 rigidbody.velocity = Vector3.ClampMagnitude(rigidbody.velocity, maxWalkingVelocity);   
         }
+
+		player.lastMovementInput = movementInput;
 	}
 
 	public override void OnJumpHighButton(){
@@ -42,10 +46,5 @@ public class IdleActionState : GroundedActionState {
 
 	public override void OnJumpLongButton(){
 		base.OnJumpLongButton();
-	}
-
-	public override void OnLeavingGround() {
-	base.OnLeavingGround();
-	Debug.Log("Leaving ground from idle");
 	}
 }

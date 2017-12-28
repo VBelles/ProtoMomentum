@@ -5,6 +5,8 @@ using UnityEngine;
 public class Ssj1PowerState : PowerState {
 
     public override float groundAcceleration => 30f;
+    public override float groundReleaseDeceleration => 0.5f;
+    public override float groundSkiddingDeceleration => 0.5f;
     public override float maxGroundSpeed => 8f;
     public override float jumpSpeed => 9f;
     public override float shortHopSpeed => 5f;

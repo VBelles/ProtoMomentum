@@ -5,7 +5,7 @@ using UnityEngine;
 public class GroundedActionState : ActionState {
 
     protected PowerState powerState;
-    protected Vector3 movement = new Vector3();
+    public Vector3 movement = new Vector3();
     protected Vector2 currentVelocityNormalized = new Vector2();
     protected Vector2 movementInputFromCameraPOV = new Vector2();
     protected bool isRunning = false;
@@ -45,10 +45,6 @@ public class GroundedActionState : ActionState {
   
         movementInput.Normalize();
 
-        if(lastMovementInput != Vector2.zero && movementInput == Vector2.zero){//Parón
-            rigidbody.velocity *= powerState.groundReleaseDeceleration;
-        }
-
         movement.Set(movementInput.x, 0, movementInput.y);
         movement = Camera.main.transform.TransformDirection(movement);
         movement.y = 0f;
@@ -60,15 +56,25 @@ public class GroundedActionState : ActionState {
         //Debug.Log("last: " + currentVelocityNormalized + " , current: " + movementInputFromCameraPOV);
 
         if(Vector2.Dot(currentVelocityNormalized, movementInputFromCameraPOV) > turnAroundMaxDotProduct){//si la velocidad y el nuevo input (en referencia a la cámara) están a 120 grados o más -> turn around
-            rigidbody.AddForce(movement * powerState.groundAcceleration);//Lo que debería hacer es girar hasta estar en la misma dirección que movement y add force siempre para adelante
+            if(movementInput != Vector2.zero){
+                float step = 6f * Time.deltaTime;
+                player.transform.forward = Vector3.RotateTowards(player.transform.forward, movement, step, 0.0f);
+                rigidbody.AddForce(player.transform.forward * powerState.groundAcceleration);//Girar hasta estar en la misma dirección que movement y add force siempre para adelante  
+            }else{
+                if(player.lastMovementInput != Vector2.zero){
+                    rigidbody.velocity *= powerState.groundReleaseDeceleration;
+                } 
+            }
             if(isRunning)
             {
                 if(Mathf.Abs(rigidbody.velocity.magnitude) > powerState.maxGroundSpeed){
-                    rigidbody.velocity = Vector3.ClampMagnitude(rigidbody.velocity, powerState.maxGroundSpeed);
+                    //rigidbody.velocity = Vector3.ClampMagnitude(rigidbody.velocity, powerState.maxGroundSpeed);
+                    rigidbody.velocity = player.transform.forward * powerState.maxGroundSpeed;
                 }
             }else{
                 if(Mathf.Abs(rigidbody.velocity.magnitude) > maxWalkingVelocity){
-                    rigidbody.velocity = Vector3.ClampMagnitude(rigidbody.velocity, maxWalkingVelocity);   
+                    //rigidbody.velocity = Vector3.ClampMagnitude(rigidbody.velocity, maxWalkingVelocity);
+                    rigidbody.velocity = player.transform.forward * maxWalkingVelocity;   
                 }
             }
         }else{

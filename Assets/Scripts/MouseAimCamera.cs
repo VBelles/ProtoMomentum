@@ -15,10 +15,10 @@ public class MouseAimCamera : MonoBehaviour {
 
     private Camera cam;
     
-    private float maxDistance = 10f;
-    private float minDistance = 4f;
-    private float maxVerticalOffset = 1.8f;
-    private float minVerticalOffset = 0.2f;
+    private float maxDistance = 7f;//10f;
+    private float minDistance = 2f;//4f;
+    private float maxVerticalOffset = 1.5f;//1.8f;
+    private float minVerticalOffset = 1.0f;//0.2f;
     private float deltaAngle;
     private float currentX = 0f;
     private float currentY = 20f;

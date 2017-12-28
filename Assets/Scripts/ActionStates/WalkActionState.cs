@@ -24,6 +24,8 @@ public class WalkActionState : GroundedActionState {//Básicamente se diferencia
 		if(rigidbody.velocity == Vector3.zero && movementInput == Vector2.zero){
 			player.SetActionState(PlayerModel.ActionStates.Idle);
 		}
+
+		player.lastMovementInput = movementInput;
 	}
 
 	public override void OnJumpHighButton(){
