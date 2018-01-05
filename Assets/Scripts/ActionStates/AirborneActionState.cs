@@ -12,7 +12,7 @@ public class AirborneActionState : ActionState {
 
     public override void Tick() {
         if (rigidbody.velocity.y < 0){
-                rigidbody.velocity += Vector3.up * Physics2D.gravity.y * (powerState.gravityFallMultiplier - 1) * Time.deltaTime;
+            rigidbody.velocity += Vector3.up * Physics2D.gravity.y * (powerState.gravityFallMultiplier - 1) * Time.deltaTime;
         }
         if (Mathf.Abs(rigidbody.velocity.y) > powerState.yMaxAirSpeed){
             rigidbody.velocity = new Vector3(rigidbody.velocity.x, (rigidbody.velocity.y / Mathf.Abs(rigidbody.velocity.y)) * powerState.yMaxAirSpeed, rigidbody.velocity.z);

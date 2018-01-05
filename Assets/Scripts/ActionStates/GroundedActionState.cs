@@ -52,7 +52,7 @@ public class GroundedActionState : ActionState {
         
         movementInputFromCameraPOV.Set(movement.x, movement.z);
         currentVelocityNormalized.Set(rigidbody.velocity.x, rigidbody.velocity.z);
-        currentVelocityNormalized.Normalize(); 
+        currentVelocityNormalized.Normalize();
         //Debug.Log("last: " + currentVelocityNormalized + " , current: " + movementInputFromCameraPOV);
 
         if(Vector2.Dot(currentVelocityNormalized, movementInputFromCameraPOV) > turnAroundMaxDotProduct){//si la velocidad y el nuevo input (en referencia a la cámara) están a 120 grados o más -> turn around

@@ -52,7 +52,6 @@ public class PlayerModel : MonoBehaviour {
 
     void Update() {
         actionState.Tick();
-
     }
 
     public void SetActionState(ActionStates state) {
