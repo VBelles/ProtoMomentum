@@ -42,4 +42,9 @@ public class GroundSensor : MonoBehaviour {
         }
     }
 
+    public bool IsTouchingGround(){
+        if(groundColliders > 0) return true;
+        else return false;
+    }
+
 }

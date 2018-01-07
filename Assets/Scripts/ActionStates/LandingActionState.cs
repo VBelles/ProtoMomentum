@@ -49,7 +49,7 @@ public class LandingActionState : GroundedActionState {
 	public override void OnJumpLongButton(){}//no responde al input
 
 	IEnumerator TransitionToState(){
-		if(impactVelocity > -player.powerState.yMaxAirSpeed){
+		if(impactVelocity > -powerState.yMaxAirSpeed){
 			yield return new WaitForSeconds((1/60f)*landingLag);
 		}else{
 			yield return new WaitForSeconds((1/60f)*landingLagLong);

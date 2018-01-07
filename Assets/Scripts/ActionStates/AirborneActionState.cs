@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class AirborneActionState : ActionState {
 
-    private PowerState powerState;
-    public float fallSpeed = 0;//Esto debería estar en airborne long jump y airborne normal, ya que se tiene que resetear si hay propel, por ejemplo
+    protected PowerState powerState;
+    public float fallSpeed = 0;//Esto debería estar en airborne long jump y airborne normal, ya que se tiene que resetear si hay propel, por ejemplo (o simplemente hacer fallSpeed = 0 en propel)
 
     public AirborneActionState(PlayerModel player) : base(player) {
     }
@@ -25,6 +25,7 @@ public class AirborneActionState : ActionState {
     public override void OnStateEnter(ActionState lastState)  {
         base.OnStateEnter(lastState);
         this.powerState = player.powerState;
+        player.StartCoroutine(MakeSureIsAirborne());
         fallSpeed = 0;
         GetPowerStateValues();
     }
@@ -47,5 +48,14 @@ public class AirborneActionState : ActionState {
 
     public override void OnJumpLongButton() {
         base.OnJumpLongButton();
+    }
+
+    IEnumerator MakeSureIsAirborne(){
+        yield return new WaitForFixedUpdate();
+		//Si no ha conseguido salir del suelo vamos a landing
+		if(player.groundSensor.IsTouchingGround()){
+			Debug.Log("Aterrizando porque no ha llegado a salir del suelo");
+			player.SetActionState(PlayerModel.ActionStates.Landing);
+		}
     }
 }

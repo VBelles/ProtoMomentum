@@ -6,14 +6,17 @@ using UnityEngine;
 public class PlayerModel : MonoBehaviour {
 
     public bool jumpButtonPressed = false;
-    public bool isLongJump = false;
     public Vector2 lastMovementInput = new Vector2();
+    public GroundSensor groundSensor;
 
     private new Rigidbody rigidbody;
 
     //Tan sucio como hermoso
     public ActionState actionState { get; private set; }
-    public enum ActionStates { Grounded, Airborne, Idle, Landing, Walk, Run, JumpSquat, AirborneNormal, TurnAround };
+    public enum ActionStates { 
+        Grounded, Airborne, Idle, Landing, Walk, Run, JumpSquat,
+        AirborneNormal, TurnAround, JumpSquatLong, AirborneLongJump 
+    };
     private Dictionary<ActionStates, ActionState> actionStates;
 
     public PowerState powerState { get; private set; }
@@ -24,7 +27,7 @@ public class PlayerModel : MonoBehaviour {
 
     void Awake() {
         rigidbody = GetComponent<Rigidbody>();
-
+        groundSensor = GetComponentInChildren<GroundSensor>();
     }
 
     void Start() {
@@ -37,7 +40,9 @@ public class PlayerModel : MonoBehaviour {
            {ActionStates.Run, new RunActionState(this)},
            {ActionStates.JumpSquat, new JumpSquatActionState(this)},
            {ActionStates.AirborneNormal, new AirborneNormalActionState(this)},
-           {ActionStates.TurnAround, new TurnAroundActionState(this)}
+           {ActionStates.TurnAround, new TurnAroundActionState(this)},
+           {ActionStates.JumpSquatLong, new JumpSquatLongActionState(this)},
+           {ActionStates.AirborneLongJump, new AirborneLongJumpActionState(this)}
         };
         powerStates = new Dictionary<PowerStates, PowerState>(){
             {PowerStates.Basic, new Ssj1PowerState(this)},

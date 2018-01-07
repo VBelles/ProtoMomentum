@@ -23,7 +23,6 @@ public class GroundedActionState : ActionState {
 
     public override void OnStateEnter(ActionState lastState) {
         base.OnStateEnter(lastState);
-        player.isLongJump = false;
         RefreshPowerState();
     }
 
@@ -85,14 +84,12 @@ public class GroundedActionState : ActionState {
 
     public override void OnJumpHighButton() {
         base.OnJumpHighButton();
-        //rigidbody.velocity += Vector3.up * powerState.jumpSpeed;
-        player.SetActionState(PlayerModel.ActionStates.JumpSquat);//Lo cambiamos aquí para que no se clampee el valor, luego aquí cambiará a jump squat, no a airborne
+        player.SetActionState(PlayerModel.ActionStates.JumpSquat);
     }
 
     public override void OnJumpLongButton() {
         base.OnJumpLongButton();
-        //rigidbody.velocity = new Vector2(player.facingDirection.x * xLongJumpVelocity, _yLongJumpVelocity, player.facingDirection.y * xLongJumpVelocity);
-        player.isLongJump = true;
+        player.SetActionState(PlayerModel.ActionStates.JumpSquatLong);
     }
 
     public virtual void OnLeavingGround() {

@@ -11,6 +11,8 @@ public abstract class PowerState {
     //Air movement
     public virtual float jumpSpeed  {get; protected set;}
     public virtual float shortHopSpeed  {get; protected set;}
+    public virtual float longJumpYSpeed  {get; protected set;}
+    public virtual float longJumpForwardSpeed  {get; protected set;}
     public virtual float gravityFallMultiplier {get; protected set;}
     public virtual float airAcceleration {get; protected set;}
     public virtual float backwardsAirDriftFactor {get; protected set;}

@@ -10,6 +10,8 @@ public class Ssj3PowerState : PowerState {
     public override float maxGroundSpeed => 8f;
     public override float jumpSpeed => 10f;
     public override float shortHopSpeed => 5f;
+    public override float longJumpYSpeed => 5f;  
+    public override float longJumpForwardSpeed => 11f;
     public override float airAcceleration => 11f;
     public override float backwardsAirDriftFactor => 1f;
     public override float sidewaysAirDriftFactor => 1f;

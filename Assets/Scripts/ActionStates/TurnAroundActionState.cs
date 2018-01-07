@@ -23,7 +23,7 @@ public class TurnAroundActionState : GroundedActionState {
 			exitDirection = (lastState as GroundedActionState).movement;
 		}
 		waitCoroutine = player.StartCoroutine(TransitionToState());
-		rigidbody.velocity *= player.powerState.groundSkiddingDeceleration;
+		rigidbody.velocity *= powerState.groundSkiddingDeceleration;
     }
 
     public override void OnStateExit(ActionState nextState) {
