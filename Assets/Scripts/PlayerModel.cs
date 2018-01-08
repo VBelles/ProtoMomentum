@@ -47,7 +47,7 @@ public class PlayerModel : MonoBehaviour {
         powerStates = new Dictionary<PowerStates, PowerState>(){
             {PowerStates.Basic, new Ssj1PowerState(this)},
             {PowerStates.Furiosito, new Ssj2PowerState(this)},
-            {PowerStates.Brutal, new Ssj2PowerState(this)}
+            {PowerStates.Brutal, new Ssj3PowerState(this)}
         };
         SetActionState(ActionStates.Idle);
         SetPowerState(PowerStates.Basic);

@@ -6,7 +6,7 @@ public class MouseAimCamera : MonoBehaviour {
 
     private const float Y_ANGLE_MIN = -5f;
     private const float Y_ANGLE_MIN_MOVEMENT = 10f;
-    private const float Y_ANGLE_MAX = 45f;
+    private const float Y_ANGLE_MAX = 55f;
     private const float DEFAULT_Y = 20f;
 
     private Transform target;
@@ -18,7 +18,7 @@ public class MouseAimCamera : MonoBehaviour {
     private float maxDistance = 7f;//10f;
     private float minDistance = 2f;//4f;
     private float maxVerticalOffset = 1.5f;//1.8f;
-    private float minVerticalOffset = 1.0f;//0.2f;
+    private float minVerticalOffset = 0.8f;//0.2f;
     private float deltaAngle;
     private float currentX = 0f;
     private float currentY = 20f;

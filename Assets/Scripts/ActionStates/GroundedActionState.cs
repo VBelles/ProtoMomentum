@@ -56,7 +56,7 @@ public class GroundedActionState : ActionState {
 
         if(Vector2.Dot(currentVelocityNormalized, movementInputFromCameraPOV) > turnAroundMaxDotProduct){//si la velocidad y el nuevo input (en referencia a la cámara) están a 120 grados o más -> turn around
             if(movementInput != Vector2.zero){
-                float step = 6f * Time.deltaTime;
+                float step = 11f * Time.deltaTime;
                 player.transform.forward = Vector3.RotateTowards(player.transform.forward, movement, step, 0.0f);
                 rigidbody.AddForce(player.transform.forward * powerState.groundAcceleration);//Girar hasta estar en la misma dirección que movement y add force siempre para adelante  
             }else{
