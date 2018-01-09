@@ -5,8 +5,11 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody))]
 public class PlayerModel : MonoBehaviour {
 
+    [HideInInspector]
     public bool jumpButtonPressed = false;
+    [HideInInspector]
     public Vector2 lastMovementInput = new Vector2();
+    [HideInInspector]
     public GroundSensor groundSensor;
 
     private new Rigidbody rigidbody;

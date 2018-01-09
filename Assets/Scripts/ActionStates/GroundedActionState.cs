@@ -9,7 +9,7 @@ public class GroundedActionState : ActionState {
     protected Vector2 currentVelocityNormalized = new Vector2();
     protected Vector2 movementInputFromCameraPOV = new Vector2();
     protected bool isRunning = false;
-    protected float maxWalkingVelocity = 4f;
+    protected float maxWalkingVelocity = 2f;
     protected float walkingJoystickMaxTilt = 0.85f;
     protected float turnAroundMinAngle = 120;
     protected float turnAroundMaxDotProduct;

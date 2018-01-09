@@ -7,7 +7,7 @@ public class MouseAimCamera : MonoBehaviour {
     private const float Y_ANGLE_MIN = -5f;
     private const float Y_ANGLE_MIN_MOVEMENT = 10f;
     private const float Y_ANGLE_MAX = 55f;
-    private const float DEFAULT_Y = 20f;
+    private const float DEFAULT_Y = 30f;
 
     private Transform target;
     private Transform camTransform;
@@ -15,7 +15,7 @@ public class MouseAimCamera : MonoBehaviour {
 
     private Camera cam;
     
-    private float maxDistance = 7f;//10f;
+    private float maxDistance = 8f;//10f;
     private float minDistance = 2f;//4f;
     private float maxVerticalOffset = 1.5f;//1.8f;
     private float minVerticalOffset = 0.8f;//0.2f;
@@ -27,12 +27,17 @@ public class MouseAimCamera : MonoBehaviour {
     private float stickSensitivityX = 25f;
     private float stickSensitivityY = 10f;
     private float cameraYVelocity = 30f;//grados por segundo
+    private float cameraXZVelocity = 35f;
+    private int timeToChangeDirection = 90;
 
     private bool isPlayerControllingCamera  = false;
     private Vector3 verticalOffsetVector;
     private Vector3 distanceVector;
     private Coroutine moveCameraCoroutine;
     private bool isCoroutineRunning = false;
+    private int rotateDirection = 1;
+    private bool justChangedDirection = false;
+    private bool canChangeDirection = true;
 
     void Awake(){
         player = FindObjectOfType<PlayerModel>();
@@ -61,6 +66,7 @@ public class MouseAimCamera : MonoBehaviour {
             currentY += Input.GetAxis("Right Stick Y") * stickSensitivityY;
             isPlayerControllingCamera = true;
         }
+        currentX = currentX % 360;
 
         if(isPlayerControllingCamera && moveCameraCoroutine != null && isCoroutineRunning == true){
             StopCoroutine(moveCameraCoroutine);
@@ -70,7 +76,7 @@ public class MouseAimCamera : MonoBehaviour {
         if(player.actionState is IdleActionState){
             currentY = Mathf.Clamp(currentY, Y_ANGLE_MIN, Y_ANGLE_MAX);
         }else{
-            if(currentY < DEFAULT_Y){
+            if(currentY < Y_ANGLE_MIN_MOVEMENT){
                 if(!isPlayerControllingCamera && !isCoroutineRunning){
                     moveCameraCoroutine = StartCoroutine(MoveTowardsAngleAtVelocity(DEFAULT_Y, cameraYVelocity));
                 }
@@ -83,6 +89,7 @@ public class MouseAimCamera : MonoBehaviour {
 
     void LateUpdate() {
         CalculateDistanceVector();
+        CenterOnBack();
         Quaternion rotation = Quaternion.Euler(currentY, currentX, 0);
         camTransform.position = target.position + rotation * distanceVector;
         CalculateVerticalOffsetVector();
@@ -121,5 +128,38 @@ public class MouseAimCamera : MonoBehaviour {
             }
         }
         isCoroutineRunning = false;
+    }
+
+    void CenterOnBack(){
+        if(!isPlayerControllingCamera && !(player.actionState is IdleActionState)){
+            float targetX = Mathf.Atan2(player.transform.forward.x,player.transform.forward.z) * 180 / Mathf.PI;//Arcotangente de lado opuesto partido por lado contiguo
+            currentX = (currentX + 360) % 360;//sumo 360 para evitar los negativos
+            targetX = (targetX + 360) % 360;
+            float targetMinusCurrent = targetX - currentX;
+
+            if(canChangeDirection){
+                if(targetMinusCurrent > 180 || (targetMinusCurrent < 0 && targetMinusCurrent > -180)){
+                    if(rotateDirection == 1){ justChangedDirection = true; }
+                    rotateDirection = -1; 
+                }else{
+                    if(rotateDirection == -1){ justChangedDirection = true; }
+                    rotateDirection = 1; 
+                }
+                if(justChangedDirection){
+                    justChangedDirection = false;
+                    canChangeDirection = false;
+                    StartCoroutine(CounterToEnableChangeDirection());
+                }
+            }
+
+            currentX += rotateDirection * cameraXZVelocity * Time.deltaTime;
+            if(Mathf.Abs(currentX - targetX) < cameraXZVelocity/50){ currentX = targetX; }  
+        }
+    }
+
+    IEnumerator CounterToEnableChangeDirection(){
+        yield return new WaitForSeconds(timeToChangeDirection/60f);
+        Debug.Log("Can Change direction");
+        canChangeDirection = true;
     }
 }
